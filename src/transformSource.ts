@@ -9,20 +9,21 @@
       ## ## ##*/
 
 import { parse } from "@babel/parser";
-import traverse, { Visitor } from "@babel/traverse";
+import traverse from "@babel/traverse";
 import generate from "@babel/generator";
 
-export function applyTransformers(source: string, visitors: Visitor[]): string {
+import { TypesVisitor } from "./Visitor";
+
+export function transformSource(source: string): string {
   // Create AST from Source
   const ast = parse(source, {
     plugins: ["flow", "classProperties"],
-    sourceType: "module",
+    sourceType: "module"
   });
 
   // Traverse
-  for (const visitor of visitors) {
-    traverse(ast, visitor);
-  }
+  traverse(ast, TypesVisitor);
 
+  // Generate and return code
   return generate(ast, { retainLines: true }).code;
 }
